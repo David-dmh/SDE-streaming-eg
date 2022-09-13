@@ -13,6 +13,11 @@ case class ServerLog(
 object ServerLog {
   def fromString(value: String): ServerLog = {
     val elements: Array[String] = value.split(",")
-    ServerLog(elements(0), elements(1).toInt, elements(2), elements(3), elements(4).toLong)
+    ServerLog(
+      elements(0), 
+      elements(1).toInt, 
+      elements(2), 
+      elements(3), 
+      elements(4).toLong)
   }
 }
