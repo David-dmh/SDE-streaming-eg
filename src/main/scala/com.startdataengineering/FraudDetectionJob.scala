@@ -13,10 +13,15 @@ object FraudDetectionJob {
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
     val properties = new Properties()
-    properties.setProperty("bootstrap.servers", "kafka:9092")
+    properties.setProperty(
+      "bootstrap.servers", 
+      "kafka:9092")
 
     val myConsumer = new FlinkKafkaConsumer[String](
-      "server-logs", new SimpleStringSchema(), properties)
+      "server-logs", 
+      new SimpleStringSchema(), 
+      properties)
+      
     myConsumer.setStartFromEarliest()
 
     val events = env
