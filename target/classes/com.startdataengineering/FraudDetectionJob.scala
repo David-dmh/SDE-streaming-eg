@@ -34,7 +34,9 @@ object FraudDetectionJob {
       .name("fraud-detector")
 
     val myProducer = new FlinkKafkaProducer[String](
-      "alerts", new SimpleStringSchema(), properties)
+      "alerts", 
+      new SimpleStringSchema(), 
+      properties)
 
     alerts
       .addSink(myProducer)
