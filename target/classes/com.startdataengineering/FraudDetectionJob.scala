@@ -28,6 +28,7 @@ object FraudDetectionJob {
       .addSource(myConsumer)
       .name("incoming-events")
 
+    // detect fraud and generate alerts
     val alerts: DataStream[String] = events
       .keyBy(event => event.split(",")(1))
       .process(new FraudDetection)
@@ -42,6 +43,7 @@ object FraudDetectionJob {
       .addSink(myProducer)
       .name("send-alerts")
 
+    // write server logs to postgres db
     events
       .addSink(new ServerLogSink)
       .name("event-log")
