@@ -48,6 +48,7 @@ object FraudDetectionJob {
       .addSink(new ServerLogSink)
       .name("event-log")
 
+    // exec job - creates data pipeline’s data flow graph and lets the JobManager know to start job
     env.execute("Fraud Detection")
 
   }
