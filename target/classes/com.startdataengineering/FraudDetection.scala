@@ -16,33 +16,38 @@ class FraudDetection extends KeyedProcessFunction[String, String, String]{
 
   @throws[Exception]
   override def open(parameters: Configuration): Unit = {
-    val loginDescriptor = new ValueStateDescriptor("login-flag", Types.BOOLEAN)
+    val loginDescriptor = new ValueStateDescriptor(
+      "login-flag", 
+      Types.BOOLEAN)
     loginState = getRuntimeContext.getState(loginDescriptor)
 
-    val prevCountryDescriptor = new ValueStateDescriptor("prev-country", Types.STRING)
+    val prevCountryDescriptor = new ValueStateDescriptor(
+      "prev-country", 
+      Types.STRING)
     prevLoginCountry = getRuntimeContext.getState(prevCountryDescriptor)
 
-    val timerStateDescriptor = new ValueStateDescriptor("timer-state", Types.LONG)
+    val timerStateDescriptor = new ValueStateDescriptor(
+      "timer-state", 
+      Types.LONG)
     timerState = getRuntimeContext.getState(timerStateDescriptor)
   }
 
   @throws[Exception]
   override def processElement(
-                               value: String,
-                               ctx: KeyedProcessFunction[String, String, String]#Context,
-                               out: Collector[String]): Unit = {
-    val logEvent: ServerLog = ServerLog.fromString(value)
-
-    val isLoggedIn = loginState.value
-    val prevCountry = prevLoginCountry.value
+    value: String,
+    ctx: KeyedProcessFunction[String, String, String]#Context,
+    out: Collector[String]): Unit = {
+      val logEvent: ServerLog = ServerLog.fromString(value)
+      val isLoggedIn = loginState.value
+      val prevCountry = prevLoginCountry.value
 
     if ((isLoggedIn != null) && (prevCountry != null)){
       if ((isLoggedIn == true) && (logEvent.eventType == "login")) {
         // if account already logged in and tries another login from another country, send alert event
         if (prevCountry != logEvent.locationCountry) {
           val alert: String = f"Alert eventID: ${logEvent.eventId}%s, " +
-            f"violatingAccountId: ${logEvent.accountId}%d, prevCountry: ${prevCountry}%s, " +
-            f"currentCountry: ${logEvent.locationCountry}%s"
+                              f"violatingAccountId: ${logEvent.accountId}%d, prevCountry: ${prevCountry}%s, " +
+                              f"currentCountry: ${logEvent.locationCountry}%s"
           out.collect(alert)
         }
       }
@@ -73,9 +78,10 @@ class FraudDetection extends KeyedProcessFunction[String, String, String]{
   }
 
   @throws[Exception]
-  override def onTimer(timestamp: Long,
-                       ctx: KeyedProcessFunction[String, String, String]#OnTimerContext,
-                       out: Collector[String]): Unit = {
+  override def onTimer(
+    timestamp: Long,
+    ctx: KeyedProcessFunction[String, String, String]#OnTimerContext,
+    out: Collector[String]): Unit = {
     // when the timer runs out, this method gets called, we clear the loginState and prevLoginCountry
     timerState.clear()
     loginState.clear()
