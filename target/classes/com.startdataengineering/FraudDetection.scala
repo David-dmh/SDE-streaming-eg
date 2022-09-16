@@ -8,6 +8,9 @@ import org.apache.flink.util.Collector
 
 import com.startdataengineering.model.ServerLog
 
+// open
+// processElement
+// onTimer
 class FraudDetection extends KeyedProcessFunction[String, String, String]{
 
   private var loginState: ValueState[java.lang.Boolean] = _
