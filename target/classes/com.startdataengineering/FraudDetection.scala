@@ -8,15 +8,16 @@ import org.apache.flink.util.Collector
 
 import com.startdataengineering.model.ServerLog
 
-// open
-// processElement
-// onTimer
+// 1. open
+// 2. processElement
+// 3. onTimer
 class FraudDetection extends KeyedProcessFunction[String, String, String]{
 
   private var loginState: ValueState[java.lang.Boolean] = _
   private var prevLoginCountry: ValueState[java.lang.String] = _
   private var timerState: ValueState[java.lang.Long] = _
 
+  // 1.
   @throws[Exception]
   override def open(parameters: Configuration): Unit = {
     val loginDescriptor = new ValueStateDescriptor(
@@ -35,6 +36,7 @@ class FraudDetection extends KeyedProcessFunction[String, String, String]{
     timerState = getRuntimeContext.getState(timerStateDescriptor)
   }
 
+  // 2.
   @throws[Exception]
   override def processElement(
     value: String,
@@ -80,6 +82,7 @@ class FraudDetection extends KeyedProcessFunction[String, String, String]{
     }
   }
 
+  // 3.
   @throws[Exception]
   override def onTimer(
     timestamp: Long,
