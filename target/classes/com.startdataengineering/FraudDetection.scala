@@ -42,44 +42,45 @@ class FraudDetection extends KeyedProcessFunction[String, String, String]{
     value: String,
     ctx: KeyedProcessFunction[String, String, String]#Context,
     out: Collector[String]): Unit = {
+
       val logEvent: ServerLog = ServerLog.fromString(value)
       val isLoggedIn = loginState.value
       val prevCountry = prevLoginCountry.value
 
-    if ((isLoggedIn != null) && (prevCountry != null)){
-      if ((isLoggedIn == true) && (logEvent.eventType == "login")) {
-        // if account already logged in and tries another login from another country, send alert event
-        if (prevCountry != logEvent.locationCountry) {
-          val alert: String = f"Alert eventID: ${logEvent.eventId}%s, " +
-                              f"violatingAccountId: ${logEvent.accountId}%d, prevCountry: ${prevCountry}%s, " +
-                              f"currentCountry: ${logEvent.locationCountry}%s"
-          out.collect(alert)
+      if ((isLoggedIn != null) && (prevCountry != null)){
+        if ((isLoggedIn == true) && (logEvent.eventType == "login")) {
+          // if account already logged in and tries another login from another country, send alert event
+          if (prevCountry != logEvent.locationCountry) {
+            val alert: String = f"Alert eventID: ${logEvent.eventId}%s, " +
+                                f"violatingAccountId: ${logEvent.accountId}%d, prevCountry: ${prevCountry}%s, " +
+                                f"currentCountry: ${logEvent.locationCountry}%s"
+            out.collect(alert)
+          }
         }
       }
-    }
-    else if (logEvent.eventType == "login"){
-      // set login and set prev login country
-      loginState.update(true)
-      prevLoginCountry.update(logEvent.locationCountry)
+      else if (logEvent.eventType == "login"){
+        // set login and set prev login country
+        loginState.update(true)
+        prevLoginCountry.update(logEvent.locationCountry)
 
-      // as soon as the account user logs in, we set a timer for 5 min for this account ID
-      // 5 * 60 * 1000L -> 5 min, time is expected in Long format
-      val timer = logEvent.eventTimeStamp + (5 * 60 * 1000L)
-      ctx.timerService.registerProcessingTimeTimer(timer)
-      timerState.update(timer)
-    }
-    if (logEvent.eventType == "log-out") {
-      // reset prev login and country
-      loginState.clear()
-      prevLoginCountry.clear()
-
-      // remove timer, if it is set
-      val timer = timerState.value()
-      if (timer != null){
-        ctx.timerService.deleteProcessingTimeTimer(timer)
+        // as soon as the account user logs in, we set a timer for 5 min for this account ID
+        // 5 * 60 * 1000L -> 5 min, time is expected in Long format
+        val timer = logEvent.eventTimeStamp + (5 * 60 * 1000L)
+        ctx.timerService.registerProcessingTimeTimer(timer)
+        timerState.update(timer)
       }
-      timerState.clear()
-    }
+      if (logEvent.eventType == "log-out") {
+        // reset prev login and country
+        loginState.clear()
+        prevLoginCountry.clear()
+
+        // remove timer, if it is set
+        val timer = timerState.value()
+        if (timer != null){
+          ctx.timerService.deleteProcessingTimeTimer(timer)
+        }
+        timerState.clear()
+      }
   }
 
   // 3.
