@@ -89,7 +89,7 @@ class FraudDetection extends KeyedProcessFunction[String, String, String]{
     timestamp: Long,
     ctx: KeyedProcessFunction[String, String, String]#OnTimerContext,
     out: Collector[String]): Unit = {
-      // when the timer runs out, this method gets called, we clear the loginState and prevLoginCountry\
+      // when the timer runs out, this method gets called, we clear the loginState and prevLoginCountry
       timerState.clear()
       loginState.clear()
       prevLoginCountry.clear()

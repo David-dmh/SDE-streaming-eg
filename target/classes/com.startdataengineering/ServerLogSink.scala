@@ -18,10 +18,19 @@ class ServerLogSink extends RichSinkFunction[String] {
 
   private val COUNTRY_MAP = Map(
     "USA" -> "United States of America",
-    "IN" -> "India", "UK" -> "United Kingdom", "CA" -> "Canada",
-    "AU" -> "Australia", "DE" -> "Germany", "ES" -> "Spain",
-    "FR" -> "France", "NL" -> "New Zealand", "SG" -> "Singapore",
-    "RU" -> "Russia", "JP" -> "Japan", "BR" -> "Brazil", "CN" -> "China",
+    "IN" -> "India", 
+    "UK" -> "United Kingdom", 
+    "CA" -> "Canada",
+    "AU" -> "Australia", 
+    "DE" -> "Germany", 
+    "ES" -> "Spain",
+    "FR" -> "France", 
+    "NL" -> "New Zealand", 
+    "SG" -> "Singapore",
+    "RU" -> "Russia", 
+    "JP" -> "Japan", 
+    "BR" -> "Brazil", 
+    "CN" -> "China",
     "O" -> "Other")
 
   private val dtFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
