@@ -63,6 +63,7 @@ services:
       - ./conf:/opt/flink/conf
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
-      
+
 volumes:
   flink-checkpoints-directory:
+  
